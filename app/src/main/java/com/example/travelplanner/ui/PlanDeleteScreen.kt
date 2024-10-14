@@ -17,28 +17,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
-import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
-import com.example.travelplanner.viewModel.PlanViewModel
+import com.example.travelplanner.util.ImageUtil
+import com.example.travelplanner.viewModelInterface.PlanDeleteData
 
 @Composable
-fun PlanDeleteScreen(planViewModel: PlanViewModel, navController: NavController){
+fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteData){
+
+    val plans = planDeleteData.plans
+
+    var showDialog by remember { mutableStateOf(false) }
+    var planToDelete by remember { mutableStateOf<TravelPlan?>(null) }
+
     AppScreenWithHeader(
         title = "プラン削除",
         onBackClick = {navController.navigate("main")}
     ) {
-        val plans = planViewModel.plans
 
-        var showDialog by remember { mutableStateOf(false) }
-        var planToDelete by remember { mutableStateOf<TravelPlan?>(null) }
-
-        val image = painterResource(R.drawable.colcbord_free)
         Box(modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)) {
             Image(
-                painter = image,
+                painter = ImageUtil.getBackgroundImage(),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -72,7 +72,7 @@ fun PlanDeleteScreen(planViewModel: PlanViewModel, navController: NavController)
             dismissLabel = "いいえ",
             onConfirm = {
                 planToDelete?.let {
-                    planViewModel.removePlan(it)
+                    planDeleteData.removePlan(it)
                     showDialog = false
                     planToDelete = null
                 }

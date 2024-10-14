@@ -22,18 +22,20 @@ fun WebViewScreen(
     destination: String,
     planViewModel: PlanViewModel
 ){
+    val travelPlan = planViewModel.plans.find { it.destination == destination }
+
+    val initialUrl = travelPlan?.url?.takeIf { it.isNotEmpty() }
+        ?: "https://www.google.com/search?q=${destination}"
+
+    var url by remember { mutableStateOf(initialUrl) }
+    var showDialog by remember { mutableStateOf(false) }
+    var webView: WebView? by remember { mutableStateOf(null) }
+
     AppScreenWithHeader(
         title = "Web画面",
         onBackClick = {navController.navigate("plan_result")}
     ) {
-        val travelPlan = planViewModel.plans.find { it.destination == destination }
 
-        val initialUrl = travelPlan?.url?.takeIf { it.isNotEmpty() }
-            ?: "https://www.google.com/search?q=${destination}"
-
-        var url by remember { mutableStateOf(initialUrl) }
-        var showDialog by remember { mutableStateOf(false) }
-        var webView: WebView? by remember { mutableStateOf(null) }
 
         Column(modifier = Modifier.fillMaxSize()) {
             // URL入力欄
