@@ -21,39 +21,30 @@ import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.viewModel.PlanViewModel
 import com.example.travelplanner.viewModel.PlanViewModelFactory
+import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
+import com.example.travelplanner.viewModelInterface.PlanCreateData
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel){
+fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData){
+    val context = LocalContext.current
+
+    val calendar = Calendar.getInstance()
+
+    var selectedDate by remember { mutableStateOf(calendar.time) }
+    var destination by remember { mutableStateOf("") }
+
+    var showDatePickDialog by remember { mutableStateOf(false) }
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    val image = painterResource(R.drawable.colcbord_free)
+
     AppScreenWithHeader(
         title = "プラン作成",
         onBackClick = {navController.navigate("main")}
     ) {
-        val context = LocalContext.current
-
-        val calendar = Calendar.getInstance()
-
-        var selectedDate by remember { mutableStateOf(calendar.time) }
-        var destination by remember { mutableStateOf("") }
-        var showSaveDialog by remember { mutableStateOf(false) }
-        var showCancelDialog by remember { mutableStateOf(false) }
-
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        val datePickerDialog = DatePickerDialog(
-            context,
-            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                calendar.set(year, month, dayOfMonth)
-                selectedDate = calendar.time
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-
-        val image = painterResource(R.drawable.colcbord_free)
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = image,
@@ -69,15 +60,13 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
-                ///
                 OutlinedTextField(
-                    value = dateFormat.format(selectedDate),
+                    value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate),
                     onValueChange = {},
                     label = { Text("日付") },
                     readOnly = true,
                     modifier = Modifier
-                        .clickable { datePickerDialog.show() },
+                        .clickable { showDatePickDialog = true },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -106,7 +95,7 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                             date = selectedDate,
                             destination = destination
                         )
-                        planViewModel.addPlan(newPlan)
+                        planCreateData.addPlan(newPlan)
                         showSaveDialog = true
                     },
                     modifier = Modifier
@@ -143,7 +132,20 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 }
             }
         }
-
+    }
+    if(showDatePickDialog){
+        DatePickerDialog(
+            context,
+            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+                calendar.set(year, month, dayOfMonth)
+                selectedDate = calendar.time
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+    }
+    if (showSaveDialog){
         // 保存後の選択肢ダイアログ
         CheckDialog(
             showDialog = showSaveDialog,
@@ -160,7 +162,8 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 destination = ""
             }
         )
-
+    }
+    if (showCancelDialog){
         // キャンセル時のダイアログ
         CheckDialog(
             showDialog = showCancelDialog,
@@ -180,17 +183,7 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
 @Preview(showBackground = true)
 @Composable
 fun PlanCreatePreview(){
-    // モックのSharedPreferencesを作成
-    val context = LocalContext.current
-    val mockPrefs: SharedPreferences = context.getSharedPreferences("mock_prefs", Context.MODE_PRIVATE)
-
-    // PlanViewModelFactoryを使ってPlanViewModelを作成
-    val mockPlanViewModel = PlanViewModelFactory(mockPrefs).create(PlanViewModel::class.java)
-
-    // 日付をDate型で生成
-    val mockDate = Calendar.getInstance().apply {
-        set(2024, 10, 14)
-    }.time
-    mockPlanViewModel.addPlan(TravelPlan(date = mockDate, destination = "Test Destination"))
-    PlanCreateScreen(navController = NavController(LocalContext.current), mockPlanViewModel)
+    //TODO:NavControllerで渡すのは美しくないので、PlanCreateDataのような方法で渡す。
+    // (PlanCreateDataに内包してもいいかも)
+    PlanCreateScreen(navController = NavController(LocalContext.current), FakePlanCreateDataProvider().values.first())
 }
