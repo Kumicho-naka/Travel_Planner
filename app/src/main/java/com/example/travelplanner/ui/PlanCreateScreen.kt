@@ -1,16 +1,38 @@
 package com.example.travelplanner.ui
 
-import android.app.DatePickerDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.icu.util.Calendar
-import android.widget.DatePicker
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -19,41 +41,50 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
-import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModel.PlanViewModelFactory
+import com.example.travelplanner.util.CoreUtil.ldtToDate
+import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
+import com.example.travelplanner.viewModelInterface.PlanCreateData
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Date
 import java.util.Locale
 
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel){
+fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData){
+    val context = LocalContext.current
+
+    val calendar = Calendar.getInstance()
+
+    // 比較用
+    val today = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.time
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    var selectedDate by remember { mutableStateOf(calendar.time) }
+    var destination by remember { mutableStateOf("") }
+
+    var destinationError by remember { mutableStateOf(false) }
+
+    var showDatePickDialog by remember { mutableStateOf(false) }
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    val image = painterResource(R.drawable.colcbord_free)
+
     AppScreenWithHeader(
         title = "プラン作成",
         onBackClick = {navController.navigate("main")}
     ) {
-        val context = LocalContext.current
-
-        val calendar = Calendar.getInstance()
-
-        var selectedDate by remember { mutableStateOf(calendar.time) }
-        var destination by remember { mutableStateOf("") }
-        var showSaveDialog by remember { mutableStateOf(false) }
-        var showCancelDialog by remember { mutableStateOf(false) }
-
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        val datePickerDialog = DatePickerDialog(
-            context,
-            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                calendar.set(year, month, dayOfMonth)
-                selectedDate = calendar.time
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-
-        val image = painterResource(R.drawable.colcbord_free)
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = image,
@@ -69,15 +100,20 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
-                ///
                 OutlinedTextField(
                     value = dateFormat.format(selectedDate),
                     onValueChange = {},
                     label = { Text("日付") },
                     readOnly = true,
-                    modifier = Modifier
-                        .clickable { datePickerDialog.show() },
+                    modifier = Modifier,
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePickDialog = !showDatePickDialog }) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "日付選択"
+                            )
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -88,8 +124,11 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = destination,
-                    onValueChange = { destination = it },
+                    onValueChange = {
+                        destination = it
+                        destinationError = destination.isEmpty()},
                     label = { Text("旅行先") },
+                    isError = destinationError,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -98,16 +137,30 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                     )
                 )
 
+                if (destinationError) {
+                    Text(
+                        text = "旅行先を入力してください",  // エラーメッセージの表示
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
-                        val newPlan = TravelPlan(
-                            date = selectedDate,
-                            destination = destination
-                        )
-                        planViewModel.addPlan(newPlan)
-                        showSaveDialog = true
+                        if(destination.isEmpty()){
+                            destinationError = true
+                        }
+                        else{
+                            val newPlan = TravelPlan(
+                                date = selectedDate,
+                                destination = destination
+                            )
+                            planCreateData.addPlan(newPlan)
+                            showSaveDialog = true
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -124,7 +177,7 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
 
                 Button(
                     onClick = {
-                        if (selectedDate != Calendar.getInstance().time ||
+                        if (dateFormat.format(selectedDate) != dateFormat.format(today) ||
                             destination.isNotEmpty()
                         ) {
                             showCancelDialog = true
@@ -143,7 +196,34 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 }
             }
         }
+    }
+    if(showDatePickDialog){
+        val datePickerState = rememberDatePickerState()
 
+        DatePickerDialog(
+            onDismissRequest = {showDatePickDialog=false},
+            confirmButton = {
+                TextButton(onClick = {
+                    val instant = datePickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it) }
+
+                    selectedDate = context.ldtToDate(LocalDateTime.ofInstant(instant, ZoneId.systemDefault()))
+                    showDatePickDialog=false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {showDatePickDialog=false}) {
+                    Text("キャンセル")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
+    }
+    if (showSaveDialog){
         // 保存後の選択肢ダイアログ
         CheckDialog(
             showDialog = showSaveDialog,
@@ -160,7 +240,8 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
                 destination = ""
             }
         )
-
+    }
+    if (showCancelDialog){
         // キャンセル時のダイアログ
         CheckDialog(
             showDialog = showCancelDialog,
@@ -180,17 +261,7 @@ fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel)
 @Preview(showBackground = true)
 @Composable
 fun PlanCreatePreview(){
-    // モックのSharedPreferencesを作成
-    val context = LocalContext.current
-    val mockPrefs: SharedPreferences = context.getSharedPreferences("mock_prefs", Context.MODE_PRIVATE)
-
-    // PlanViewModelFactoryを使ってPlanViewModelを作成
-    val mockPlanViewModel = PlanViewModelFactory(mockPrefs).create(PlanViewModel::class.java)
-
-    // 日付をDate型で生成
-    val mockDate = Calendar.getInstance().apply {
-        set(2024, 10, 14)
-    }.time
-    mockPlanViewModel.addPlan(TravelPlan(date = mockDate, destination = "Test Destination"))
-    PlanCreateScreen(navController = NavController(LocalContext.current), mockPlanViewModel)
+    //TODO:NavControllerで渡すのは美しくないので、PlanCreateDataのような方法で渡す。
+    // (PlanCreateDataに内包してもいいかも)
+    PlanCreateScreen(navController = NavController(LocalContext.current), FakePlanCreateDataProvider().values.first())
 }
