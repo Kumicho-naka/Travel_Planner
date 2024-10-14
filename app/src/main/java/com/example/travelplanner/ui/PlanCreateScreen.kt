@@ -1,16 +1,38 @@
 package com.example.travelplanner.ui
 
-import android.app.DatePickerDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.icu.util.Calendar
-import android.widget.DatePicker
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -19,13 +41,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
-import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModel.PlanViewModelFactory
+import com.example.travelplanner.util.CoreUtil.ldtToDate
 import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Date
 import java.util.Locale
 
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData){
     val context = LocalContext.current
@@ -65,8 +94,15 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                     onValueChange = {},
                     label = { Text("日付") },
                     readOnly = true,
-                    modifier = Modifier
-                        .clickable { showDatePickDialog = true },
+                    modifier = Modifier,
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePickDialog = !showDatePickDialog }) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "日付選択"
+                            )
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -134,16 +170,30 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
         }
     }
     if(showDatePickDialog){
+        val datePickerState = rememberDatePickerState()
+
         DatePickerDialog(
-            context,
-            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                calendar.set(year, month, dayOfMonth)
-                selectedDate = calendar.time
+            onDismissRequest = {showDatePickDialog=false},
+            confirmButton = {
+                TextButton(onClick = {
+                    val instant = datePickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it) }
+
+                    selectedDate = context.ldtToDate(LocalDateTime.ofInstant(instant, ZoneId.systemDefault()))
+                    showDatePickDialog=false
+                }) {
+                    Text("OK")
+                }
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
+            dismissButton = {
+                TextButton(onClick = {showDatePickDialog=false}) {
+                    Text("キャンセル")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
     }
     if (showSaveDialog){
         // 保存後の選択肢ダイアログ
