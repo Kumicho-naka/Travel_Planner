@@ -33,7 +33,12 @@ fun PlanResultScreen(navController: NavController, planViewModel: PlanViewModel)
         title = "プラン確認",
         onBackClick = {navController.navigate("main")}
     ) {
-        val today = Calendar.getInstance().time
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
 
         val filteredPlans = planViewModel.plans
             .filter { it.date >= today } // 今日以降のみ表示
@@ -60,7 +65,7 @@ fun PlanResultScreen(navController: NavController, planViewModel: PlanViewModel)
                 LazyColumn {
                     items(filteredPlans) { plan ->
                         PlanItem(plan = plan, buttonText = "詳細", onClick = {
-                            navController.navigate("webview/{destination}")
+                            navController.navigate("webview/${plan.destination}")
 
                         })
                     }

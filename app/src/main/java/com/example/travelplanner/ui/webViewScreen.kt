@@ -20,108 +20,114 @@ import com.example.travelplanner.viewModel.PlanViewModel
 fun WebViewScreen(
     navController: NavController,
     destination: String,
-    planViewModel: PlanViewModel = viewModel()
+    planViewModel: PlanViewModel
 ){
-    val travelPlan = planViewModel.plans.find { it.destination == destination }
+    AppScreenWithHeader(
+        title = "Web画面",
+        onBackClick = {navController.navigate("plan_result")}
+    ) {
+        val travelPlan = planViewModel.plans.find { it.destination == destination }
 
-    val initialUrl = travelPlan?.url?.takeIf { it.isNotEmpty() }
-        ?: "https://www.google.com/search?q=${destination}"
+        val initialUrl = travelPlan?.url?.takeIf { it.isNotEmpty() }
+            ?: "https://www.google.com/search?q=${destination}"
 
-    var url by remember { mutableStateOf(initialUrl) }
-    var showDialog by remember { mutableStateOf(false) }
-    var webView: WebView? by remember { mutableStateOf(null) }
+        var url by remember { mutableStateOf(initialUrl) }
+        var showDialog by remember { mutableStateOf(false) }
+        var webView: WebView? by remember { mutableStateOf(null) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // URL入力欄
-        OutlinedTextField(
-            value = url,
-            onValueChange = { newUrl -> url = newUrl},
-            label = { Text("URLを入力") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            singleLine = true,
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    webView?.loadUrl(url)
-                }
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            )
-        )
-
-        // WebViewの表示
-        AndroidView(
-            factory = { context ->
-                WebView(context).apply {
-                    settings.javaScriptEnabled = true
-                    webView = this
-                    loadUrl(url)
-                }
-            },
-            update = {
-                webView ->
-                webView.loadUrl(url)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-        )
-
-        // WebViewのボタン
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround) {
-            Button(onClick = { webView?.goBack() }, enabled = webView?.canGoBack() == true) {
-                Text("戻る")
-            }
-
-            Button(onClick = { webView?.goForward() }, enabled = webView?.canGoForward() == true) {
-                Text("進む")
-            }
-
-            Button(onClick = { showDialog = true }) {
-                Text("URLを更新")
-            }
-        }
-
-        CheckDialog(
-            showDialog = showDialog,
-            title = "URL行進",
-            message = "詳細からここにアクセスするようにしますか？",
-            confirmLabel = "はい",
-            dismissLabel = "いいえ",
-            onConfirm = {
-                // URLを対象のTravelPlanのurlに保存
-                val currentUrl = webView?.url ?: ""
-                if(currentUrl.isNotEmpty()){
-                    travelPlan?.let {
-                        it.url = currentUrl
-                        planViewModel.updatePlan(it)
+        Column(modifier = Modifier.fillMaxSize()) {
+            // URL入力欄
+            OutlinedTextField(
+                value = url,
+                onValueChange = { newUrl -> url = newUrl },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                singleLine = true,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        webView?.loadUrl(url)
                     }
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                )
+            )
+
+            // WebViewの表示
+            AndroidView(
+                factory = { context ->
+                    WebView(context).apply {
+                        webViewClient = WebViewClient()
+                        settings.javaScriptEnabled = true
+                        webView = this
+                        loadUrl(url)
+                    }
+                },
+                update = { webView ->
+                    webView.loadUrl(url)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            )
+
+            // WebViewのボタン
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Button(onClick = { webView?.goBack() }, enabled = webView?.canGoBack() == true) {
+                    Text("戻る")
                 }
-                showDialog = false
 
-            },
-            onDismiss = {
-                showDialog = false
-            }
-        )
+                Button(
+                    onClick = { webView?.goForward() },
+                    enabled = webView?.canGoForward() == true
+                ) {
+                    Text("進む")
+                }
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround){
-            Button(onClick = {navController.popBackStack()}) {
-                Text("確認へ戻る")
+                Button(onClick = { showDialog = true }) {
+                    Text("URLを更新")
+                }
             }
-            Button(onClick = { navController.navigate("main") }) {
-                Text("メインに戻る")
+
+            CheckDialog(
+                showDialog = showDialog,
+                title = "URL更新",
+                message = "詳細からここにアクセスするようにしますか？",
+                confirmLabel = "はい",
+                dismissLabel = "いいえ",
+                onConfirm = {
+                    // URLを対象のTravelPlanのurlに保存
+                    val currentUrl = webView?.url ?: ""
+                    if (currentUrl.isNotEmpty()) {
+                        travelPlan?.let {
+                            it.url = currentUrl
+                            planViewModel.updatePlan(it)
+                        }
+                    }
+                    showDialog = false
+
+                },
+                onDismiss = {
+                    showDialog = false
+                }
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Button(onClick = { navController.popBackStack() }) {
+                    Text("確認へ戻る")
+                }
+                Button(onClick = { navController.navigate("main") }) {
+                    Text("メインに戻る")
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun WebViewPreview(){
-    WebViewScreen(navController = NavController(LocalContext.current), destination = "test")
-}

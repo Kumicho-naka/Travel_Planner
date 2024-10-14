@@ -55,7 +55,7 @@ fun MainScreen(navController: NavController){
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { navController.navigate("plan_confirmation") },
+            Button(onClick = { navController.navigate("plan_result") },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {

@@ -6,11 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -45,11 +42,11 @@ fun MainApp(){
 
     NavHost(navController = navController, startDestination = "main"){
         composable("main") { MainScreen(navController) } //メイン画面に移行
-        composable("plan_creatioin") { PlanCreateScreen(navController, planViewModel) } //プラン作成画面に移行
+        composable("plan_creation") { PlanCreateScreen(navController, planViewModel) } //プラン作成画面に移行
         composable("plan_result") { PlanResultScreen(navController, planViewModel) } //プラン確認画面に移行
         composable("webview/{destination}") { navBackStackEntry ->
             val destination = navBackStackEntry.arguments?.getString("destination") ?: ""
-            WebViewScreen(navController, destination)
+            WebViewScreen(navController, destination, planViewModel)
         } //プランのネットワーク情報画面に移行
         composable("plan_delete") { PlanDeleteScreen(navController = navController, planViewModel = planViewModel) } //プラン削除画面に移行
     }

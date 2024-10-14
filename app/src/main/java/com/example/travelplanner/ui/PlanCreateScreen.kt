@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
@@ -25,7 +24,6 @@ import com.example.travelplanner.viewModel.PlanViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanCreateScreen(navController: NavController, planViewModel: PlanViewModel){
     AppScreenWithHeader(
