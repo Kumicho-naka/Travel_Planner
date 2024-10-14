@@ -42,8 +42,6 @@ import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.util.CoreUtil.ldtToDate
-import com.example.travelplanner.util.DateUtil
-import com.example.travelplanner.util.ImageUtil
 import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import java.text.SimpleDateFormat
@@ -63,17 +61,14 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
     val calendar = Calendar.getInstance()
 
-    // 比較用
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
     var selectedDate by remember { mutableStateOf(calendar.time) }
     var destination by remember { mutableStateOf("") }
-
-    var destinationError by remember { mutableStateOf(false) }
 
     var showDatePickDialog by remember { mutableStateOf(false) }
     var showSaveDialog by remember { mutableStateOf(false) }
     var showCancelDialog by remember { mutableStateOf(false) }
+
+    val image = painterResource(R.drawable.colcbord_free)
 
     AppScreenWithHeader(
         title = "プラン作成",
@@ -81,7 +76,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = ImageUtil.getBackgroundImage(),
+                painter = image,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -95,7 +90,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                 verticalArrangement = Arrangement.Center
             ) {
                 OutlinedTextField(
-                    value = dateFormat.format(selectedDate),
+                    value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate),
                     onValueChange = {},
                     label = { Text("日付") },
                     readOnly = true,
@@ -118,11 +113,8 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = destination,
-                    onValueChange = {
-                        destination = it
-                        destinationError = destination.isEmpty()},
+                    onValueChange = { destination = it },
                     label = { Text("旅行先") },
-                    isError = destinationError,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -131,30 +123,16 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                     )
                 )
 
-                if (destinationError) {
-                    Text(
-                        text = "旅行先を入力してください",  // エラーメッセージの表示
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
-                }
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
-                        if(destination.isEmpty()){
-                            destinationError = true
-                        }
-                        else{
-                            val newPlan = TravelPlan(
-                                date = selectedDate,
-                                destination = destination
-                            )
-                            planCreateData.addPlan(newPlan)
-                            showSaveDialog = true
-                        }
+                        val newPlan = TravelPlan(
+                            date = selectedDate,
+                            destination = destination
+                        )
+                        planCreateData.addPlan(newPlan)
+                        showSaveDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -171,7 +149,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
                 Button(
                     onClick = {
-                        if (dateFormat.format(selectedDate) != dateFormat.format(DateUtil.resetTodayWithResetTIme()) ||
+                        if (selectedDate != Calendar.getInstance().time ||
                             destination.isNotEmpty()
                         ) {
                             showCancelDialog = true
@@ -257,6 +235,5 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 fun PlanCreatePreview(){
     //TODO:NavControllerで渡すのは美しくないので、PlanCreateDataのような方法で渡す。
     // (PlanCreateDataに内包してもいいかも)
-    PlanCreateScreen(navController = NavController(LocalContext.current),
-        FakePlanCreateDataProvider().values.first())
+    PlanCreateScreen(navController = NavController(LocalContext.current), FakePlanCreateDataProvider().values.first())
 }
