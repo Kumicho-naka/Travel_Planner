@@ -17,10 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.viewModelInterface.FakePlanDeleteDataProvider
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 
 @Composable
@@ -81,4 +84,10 @@ fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteDat
             onDismiss = { showDialog = false }
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlanDeletePreview(){
+    PlanDeleteScreen(navController = NavController(LocalContext.current),FakePlanDeleteDataProvider().values.first())
 }

@@ -62,6 +62,9 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
     val calendar = Calendar.getInstance()
 
+    // 比較用
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
     var selectedDate by remember { mutableStateOf(calendar.time) }
     var destination by remember { mutableStateOf("") }
 
@@ -159,7 +162,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
                 Button(
                     onClick = {
-                        if (selectedDate != context.resetTodayWithResetTIme() ||
+                        if (dateFormat.format(selectedDate) != dateFormat.format(context.resetTodayWithResetTIme()) ||
                             destination.isNotEmpty()
                         ) {
                             showCancelDialog = true
