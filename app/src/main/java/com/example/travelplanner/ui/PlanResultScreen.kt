@@ -24,7 +24,6 @@ import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.util.DateUtil
 import com.example.travelplanner.util.ImageUtil
 import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModel.PlanViewModelFactory
 import com.example.travelplanner.viewModelInterface.FakePlanUpdateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanResultData
 
