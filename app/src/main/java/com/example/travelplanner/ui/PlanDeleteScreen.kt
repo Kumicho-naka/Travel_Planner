@@ -17,9 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
-import com.example.travelplanner.util.ImageUtil
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 
 @Composable
@@ -38,7 +39,7 @@ fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteDat
         Box(modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)) {
             Image(
-                painter = ImageUtil.getBackgroundImage(),
+                painter = painterResource(R.drawable.colcbord_free),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,

@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.util.CoreUtil.ldtToDate
+import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import java.text.SimpleDateFormat
@@ -64,11 +65,11 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
     var selectedDate by remember { mutableStateOf(calendar.time) }
     var destination by remember { mutableStateOf("") }
 
+    var destinationError by remember { mutableStateOf(false) }
+
     var showDatePickDialog by remember { mutableStateOf(false) }
     var showSaveDialog by remember { mutableStateOf(false) }
     var showCancelDialog by remember { mutableStateOf(false) }
-
-    val image = painterResource(R.drawable.colcbord_free)
 
     AppScreenWithHeader(
         title = "プラン作成",
@@ -76,7 +77,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = image,
+                painter = painterResource(R.drawable.colcbord_free),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -113,7 +114,12 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = destination,
-                    onValueChange = { destination = it },
+                    onValueChange =
+                    {
+                        destination = it
+                        destinationError = destination.isEmpty()
+                    },
+                    isError =  destinationError,
                     label = { Text("旅行先") },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -127,12 +133,16 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
                 Button(
                     onClick = {
-                        val newPlan = TravelPlan(
-                            date = selectedDate,
-                            destination = destination
-                        )
-                        planCreateData.addPlan(newPlan)
-                        showSaveDialog = true
+                        if(destination.isEmpty()){
+                            destinationError = true
+                        }else{
+                            val newPlan = TravelPlan(
+                                date = selectedDate,
+                                destination = destination
+                            )
+                            planCreateData.addPlan(newPlan)
+                            showSaveDialog = true
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -149,7 +159,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
                 Button(
                     onClick = {
-                        if (selectedDate != Calendar.getInstance().time ||
+                        if (selectedDate != context.resetTodayWithResetTIme() ||
                             destination.isNotEmpty()
                         ) {
                             showCancelDialog = true

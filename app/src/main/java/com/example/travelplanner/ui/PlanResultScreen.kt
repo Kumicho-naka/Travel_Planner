@@ -21,8 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.model.TravelPlan
-import com.example.travelplanner.util.DateUtil
-import com.example.travelplanner.util.ImageUtil
+import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.example.travelplanner.viewModel.PlanViewModel
 import com.example.travelplanner.viewModel.PlanViewModelFactory
 import com.example.travelplanner.viewModelInterface.FakePlanUpdateDataProvider
@@ -30,8 +29,9 @@ import com.example.travelplanner.viewModelInterface.PlanResultData
 
 @Composable
 fun PlanResultScreen(navController: NavController, planResultData: PlanResultData) {
+    val context = LocalContext.current
 
-    val today = DateUtil.resetTodayWithResetTIme()
+    val today = context.resetTodayWithResetTIme()
     val filteredPlans = planResultData.plans
         .filter { it.date >= today } // 今日以降のみ表示
         .sortedBy { it.date }
@@ -43,7 +43,7 @@ fun PlanResultScreen(navController: NavController, planResultData: PlanResultDat
 
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = ImageUtil.getBackgroundImage(),
+                painter = painterResource(R.drawable.colcbord_free),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
