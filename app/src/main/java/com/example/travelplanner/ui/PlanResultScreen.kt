@@ -1,8 +1,5 @@
 package com.example.travelplanner.ui
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.icu.util.Calendar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.items
@@ -20,10 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.travelplanner.R
-import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
-import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModel.PlanViewModelFactory
 import com.example.travelplanner.viewModelInterface.FakePlanUpdateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanResultData
 

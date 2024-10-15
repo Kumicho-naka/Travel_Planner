@@ -1,18 +1,29 @@
 package com.example.travelplanner.viewModel
 
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class PlanViewModel(private val prefs: SharedPreferences) : ViewModel() {
+@HiltViewModel
+class PlanViewModel@Inject constructor(
+    @ApplicationContext private val appContext: Context,
+): ViewModel() {
 
     private val _plans = mutableListOf<TravelPlan>()
     val plans: List<TravelPlan> get() = _plans
 
+    private val prefs: SharedPreferences = appContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
     init {
         loadPlansFromStorage()
+        removeExpiredPlans()
     }
 
     // プランの追加
@@ -55,6 +66,13 @@ class PlanViewModel(private val prefs: SharedPreferences) : ViewModel() {
             _plans.clear()
             _plans.addAll(planList)
         }
+    }
+
+    // 期限の切れたプランを削除する
+    private fun removeExpiredPlans(){
+        _plans.removeAll{ it.date.before(appContext.resetTodayWithResetTIme())}
+
+        savePlansToStorage()
     }
 
 }

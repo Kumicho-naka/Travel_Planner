@@ -1,46 +1,46 @@
 package com.example.travelplanner
 
-import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.travelplanner.model.TravelPlan
 import com.example.travelplanner.ui.MainScreen
 import com.example.travelplanner.ui.PlanCreateScreen
 import com.example.travelplanner.ui.PlanDeleteScreen
 import com.example.travelplanner.ui.PlanResultScreen
 import com.example.travelplanner.ui.WebViewScreen
 import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModel.PlanViewModelFactory
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 import com.example.travelplanner.viewModelInterface.PlanResultData
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val planViewModel: PlanViewModel by viewModels()
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainApp()
+            MainApp(planViewModel)
             }
         }
     }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainApp(){
+fun MainApp(planViewModel: PlanViewModel){
     val context = LocalContext.current
-
-    val prefs = context.getSharedPreferences("travel_plans", Context.MODE_PRIVATE)
-    val planViewModel: PlanViewModel = viewModel(
-        factory = PlanViewModelFactory(prefs)
-    )
 
     val navController = rememberNavController()
 
