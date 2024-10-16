@@ -15,14 +15,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import com.example.travelplanner.R
 import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.example.travelplanner.viewModelInterface.FakePlanUpdateDataProvider
 import com.example.travelplanner.viewModelInterface.PlanResultData
 
 @Composable
-fun PlanResultScreen(navController: NavController, planResultData: PlanResultData) {
+fun PlanResultScreen(planResultData: PlanResultData) {
     val context = LocalContext.current
 
     val today = context.resetTodayWithResetTIme()
@@ -32,7 +31,7 @@ fun PlanResultScreen(navController: NavController, planResultData: PlanResultDat
 
     AppScreenWithHeader(
         title = "プラン確認",
-        onBackClick = {navController.navigate("main")}
+        onBackClick = { planResultData.navigateToMain }
     ) {
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -55,7 +54,7 @@ fun PlanResultScreen(navController: NavController, planResultData: PlanResultDat
                 LazyColumn {
                     items(filteredPlans) { plan ->
                         PlanItem(plan = plan, buttonText = "詳細", onClick = {
-                            navController.navigate("webview/${plan.destination}")
+                            planResultData.navigateToWebView(plan.destination)
                         })
                     }
                 }
@@ -69,6 +68,5 @@ fun PlanResultScreen(navController: NavController, planResultData: PlanResultDat
 @Composable
 fun PlanResultPreview(){
 
-    PlanResultScreen(navController = NavController(LocalContext.current),
-        FakePlanUpdateDataProvider().values.first())
+    PlanResultScreen( FakePlanUpdateDataProvider().values.first() )
 }

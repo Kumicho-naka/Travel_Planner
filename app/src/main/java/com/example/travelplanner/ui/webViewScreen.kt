@@ -6,23 +6,19 @@ import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.travelplanner.viewModel.PlanViewModel
+import com.example.travelplanner.viewModelInterface.FakeWebViewDataProvider
+import com.example.travelplanner.viewModelInterface.WebViewData
 
 @Composable
 fun WebViewScreen(
-    navController: NavController,
     destination: String,
-    planViewModel: PlanViewModel
+    webViewData: WebViewData
 ){
-    val travelPlan = planViewModel.plans.find { it.destination == destination }
+    val travelPlan = webViewData.plans.find { it.destination == destination }
 
     val initialUrl = travelPlan?.url?.takeIf { it.isNotEmpty() }
         ?: "https://www.google.com/search?q=${destination}"
@@ -33,7 +29,7 @@ fun WebViewScreen(
 
     AppScreenWithHeader(
         title = "Web画面",
-        onBackClick = {navController.navigate("plan_result")}
+        onBackClick = { webViewData.navigateToResult }
     ) {
 
 
@@ -107,7 +103,7 @@ fun WebViewScreen(
                     if (currentUrl.isNotEmpty()) {
                         travelPlan?.let {
                             it.url = currentUrl
-                            planViewModel.updatePlan(it)
+                            webViewData.updatePlan(it)
                         }
                     }
                     showDialog = false
@@ -122,14 +118,23 @@ fun WebViewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Button(onClick = { navController.popBackStack() }) {
+                Button(onClick = { webViewData.navigateToResult }) {
                     Text("確認へ戻る")
                 }
-                Button(onClick = { navController.navigate("main") }) {
+                Button(onClick = { webViewData.navigateToMain }) {
                     Text("メインに戻る")
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WebViewPreview(){
+    WebViewScreen(
+        destination = "",
+        FakeWebViewDataProvider().values.first()
+    )
 }
 

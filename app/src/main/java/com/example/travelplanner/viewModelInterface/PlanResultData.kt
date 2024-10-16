@@ -5,7 +5,9 @@ import com.example.travelplanner.model.TravelPlan
 
 data class PlanResultData (
     val updatePlan:(TravelPlan) -> Unit,
-    val plans:List<TravelPlan>
+    val plans:List<TravelPlan>,
+    val navigateToMain: () -> Unit,
+    val navigateToWebView: (String) -> Unit
     )
 
 
@@ -16,7 +18,9 @@ class FakePlanUpdateDataProvider : PreviewParameterProvider<PlanResultData> {
     override val values: Sequence<PlanResultData> = sequenceOf(
         PlanResultData(
             plans = listOf(),
-            updatePlan = {}
+            updatePlan = {},
+            navigateToMain = {},
+            navigateToWebView = {}
         )
     )
 }

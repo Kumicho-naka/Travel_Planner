@@ -27,7 +27,7 @@ import com.example.travelplanner.viewModelInterface.FakePlanDeleteDataProvider
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 
 @Composable
-fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteData){
+fun PlanDeleteScreen(planDeleteData: PlanDeleteData){
 
     val plans = planDeleteData.plans
 
@@ -36,7 +36,7 @@ fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteDat
 
     AppScreenWithHeader(
         title = "プラン削除",
-        onBackClick = {navController.navigate("main")}
+        onBackClick = { planDeleteData.navigateToMain }
     ) {
 
         Box(modifier = Modifier.fillMaxSize()
@@ -89,5 +89,5 @@ fun PlanDeleteScreen(navController: NavController, planDeleteData: PlanDeleteDat
 @Preview(showBackground = true)
 @Composable
 fun PlanDeletePreview(){
-    PlanDeleteScreen(navController = NavController(LocalContext.current),FakePlanDeleteDataProvider().values.first())
+    PlanDeleteScreen(FakePlanDeleteDataProvider().values.first())
 }

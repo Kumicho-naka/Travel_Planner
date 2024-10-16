@@ -17,10 +17,13 @@ import com.example.travelplanner.ui.PlanCreateScreen
 import com.example.travelplanner.ui.PlanDeleteScreen
 import com.example.travelplanner.ui.PlanResultScreen
 import com.example.travelplanner.ui.WebViewScreen
+import com.example.travelplanner.ui.navigation.MainScreenNavigationHelper
 import com.example.travelplanner.viewModel.PlanViewModel
+import com.example.travelplanner.viewModelInterface.MainScreenNavigation
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 import com.example.travelplanner.viewModelInterface.PlanResultData
+import com.example.travelplanner.viewModelInterface.WebViewData
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,39 +43,51 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainApp(planViewModel: PlanViewModel){
-    val context = LocalContext.current
 
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "main"){
-        composable("main") { MainScreen(navController) } //メイン画面に移行
+        composable("main") {
+            val mainScreenNavigationHelper = MainScreenNavigationHelper(navController)
+            MainScreen( mainScreenNavigationHelper )
+        } //メイン画面に移行
         composable("plan_creation") {
             PlanCreateScreen(
-                navController,
-                PlanCreateData{
-                    plan -> planViewModel.addPlan(plan)
-                }
+                PlanCreateData(
+                    addPlan = { plan -> planViewModel.addPlan(plan) },
+                    navigateToMain = { navController.navigate("main") },
+                    navigateToPlanResult = { navController.navigate("plan_result") }
+                )
             )
         } //プラン作成画面に移行
         composable("plan_result") {
             PlanResultScreen(
-                navController,
                 planResultData = PlanResultData(
                     updatePlan = { plan -> planViewModel.updatePlan(plan)},
-                    plans = planViewModel.plans
+                    plans = planViewModel.plans,
+                    navigateToMain = { navController.navigate("main")},
+                    navigateToWebView = { destination -> navController.navigate("webview/$destination")}
                 )
             )
         } //プラン確認画面に移行
         composable("webview/{destination}") { navBackStackEntry ->
             val destination = navBackStackEntry.arguments?.getString("destination") ?: ""
-            WebViewScreen(navController, destination, planViewModel)
+            WebViewScreen(
+                destination = destination,
+                webViewData = WebViewData(
+                    updatePlan = { plan -> planViewModel.updatePlan(plan)},
+                    plans = planViewModel.plans,
+                    navigateToMain = { navController.navigate("main") },
+                    navigateToResult = { navController.navigate("result") }
+                )
+            )
         } //プランのネットワーク情報画面に移行
         composable("plan_delete") {
             PlanDeleteScreen(
-                navController = navController,
                 planDeleteData = PlanDeleteData(
                     removePlan = { plan -> planViewModel.removePlan(plan)},
-                    plans = planViewModel.plans
+                    plans = planViewModel.plans,
+                    navigateToMain = { navController.navigate("main") }
                 )
             )
         } //プラン削除画面に移行

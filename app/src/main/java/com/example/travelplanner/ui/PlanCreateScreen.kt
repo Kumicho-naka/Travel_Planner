@@ -55,7 +55,7 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData){
+fun PlanCreateScreen(planCreateData: PlanCreateData){
     val context = LocalContext.current
 
     val calendar = Calendar.getInstance()
@@ -74,7 +74,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
 
     AppScreenWithHeader(
         title = "プラン作成",
-        onBackClick = {navController.navigate("main")}
+        onBackClick = { planCreateData.navigateToMain }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
@@ -165,7 +165,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
                         ) {
                             showCancelDialog = true
                         } else {
-                            navController.popBackStack()
+                            planCreateData.navigateToMain
                         }
                     },
                     modifier = Modifier
@@ -216,7 +216,7 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
             dismissLabel = "続けてプランを作成",
             onConfirm = {
                 showSaveDialog = false
-                navController.navigate("plan_result")
+                planCreateData.navigateToPlanResult
             },
             onDismiss = {
                 showSaveDialog = false
@@ -234,17 +234,16 @@ fun PlanCreateScreen(navController: NavController,planCreateData: PlanCreateData
             dismissLabel = "いいえ",
             onConfirm = {
                 showCancelDialog = false
-                navController.popBackStack()
+                planCreateData.navigateToMain
             },
             onDismiss = { showCancelDialog = false }
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PlanCreatePreview(){
-    //TODO:NavControllerで渡すのは美しくないので、PlanCreateDataのような方法で渡す。
-    // (PlanCreateDataに内包してもいいかも)
-    PlanCreateScreen(navController = NavController(LocalContext.current), FakePlanCreateDataProvider().values.first())
+    PlanCreateScreen( FakePlanCreateDataProvider().values.first() )
 }

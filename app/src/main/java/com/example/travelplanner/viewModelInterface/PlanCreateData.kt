@@ -5,6 +5,8 @@ import com.example.travelplanner.model.TravelPlan
 
 data class PlanCreateData(
     val addPlan:(TravelPlan) -> Unit,
+    val navigateToPlanResult: () -> Unit,
+    val navigateToMain: () -> Unit
 )
 
 /**
@@ -13,7 +15,9 @@ data class PlanCreateData(
 class FakePlanCreateDataProvider : PreviewParameterProvider<PlanCreateData> {
     override val values: Sequence<PlanCreateData> = sequenceOf(
         PlanCreateData(
-            addPlan = {}
+            addPlan = {},
+            navigateToPlanResult = {},
+            navigateToMain = {}
         )
     )
 }

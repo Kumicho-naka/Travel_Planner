@@ -5,7 +5,8 @@ import com.example.travelplanner.model.TravelPlan
 
 data class PlanDeleteData (
     val removePlan:(TravelPlan) -> Unit,
-    val plans:List<TravelPlan>
+    val plans:List<TravelPlan>,
+    val navigateToMain: () -> Unit
 )
 
 
@@ -16,7 +17,8 @@ class FakePlanDeleteDataProvider : PreviewParameterProvider<PlanDeleteData> {
     override val values: Sequence<PlanDeleteData> = sequenceOf(
         PlanDeleteData(
             plans = listOf(),
-            removePlan = {}
+            removePlan = {},
+            navigateToMain = {}
         )
     )
 }

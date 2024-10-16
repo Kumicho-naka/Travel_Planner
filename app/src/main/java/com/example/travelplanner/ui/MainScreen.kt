@@ -22,9 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.travelplanner.R
+import com.example.travelplanner.viewModelInterface.FakeMainScreenNavigation
+import com.example.travelplanner.viewModelInterface.MainScreenNavigation
 
 @Composable
-fun MainScreen(navController: NavController){
+fun MainScreen(mainScreenNavigation: MainScreenNavigation){
     val image = painterResource(R.drawable.free_item_main_background)
     Box(modifier = Modifier.fillMaxSize()){
         Image(painter = image,
@@ -46,7 +48,7 @@ fun MainScreen(navController: NavController){
                 modifier = Modifier.padding(bottom = 32.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { navController.navigate("plan_creation") },
+            Button(onClick = { mainScreenNavigation.navigateToPlanCreate() },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -55,7 +57,7 @@ fun MainScreen(navController: NavController){
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { navController.navigate("plan_result") },
+            Button(onClick = { mainScreenNavigation.navigateToPlanResult() },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -64,7 +66,7 @@ fun MainScreen(navController: NavController){
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { navController.navigate("plan_delete")  },
+            Button(onClick = { mainScreenNavigation.navigateToPlanDelete()  },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -80,5 +82,5 @@ fun MainScreen(navController: NavController){
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview(){
-        MainScreen(navController = NavController(LocalContext.current))
+        MainScreen(FakeMainScreenNavigation())
 }
