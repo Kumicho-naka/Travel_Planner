@@ -2,6 +2,7 @@ package com.example.travelplanner.ui
 
 import android.icu.util.Calendar
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -74,7 +75,7 @@ fun PlanCreateScreen(planCreateData: PlanCreateData){
 
     AppScreenWithHeader(
         title = "プラン作成",
-        onBackClick = { planCreateData.navigateToMain }
+        onBackClick = { planCreateData.navigateToMain() }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
@@ -165,7 +166,7 @@ fun PlanCreateScreen(planCreateData: PlanCreateData){
                         ) {
                             showCancelDialog = true
                         } else {
-                            planCreateData.navigateToMain
+                            planCreateData.navigateToMain()
                         }
                     },
                     modifier = Modifier
@@ -216,7 +217,7 @@ fun PlanCreateScreen(planCreateData: PlanCreateData){
             dismissLabel = "続けてプランを作成",
             onConfirm = {
                 showSaveDialog = false
-                planCreateData.navigateToPlanResult
+                planCreateData.navigateToPlanResult()
             },
             onDismiss = {
                 showSaveDialog = false
@@ -234,7 +235,7 @@ fun PlanCreateScreen(planCreateData: PlanCreateData){
             dismissLabel = "いいえ",
             onConfirm = {
                 showCancelDialog = false
-                planCreateData.navigateToMain
+                planCreateData.navigateToMain()
             },
             onDismiss = { showCancelDialog = false }
         )

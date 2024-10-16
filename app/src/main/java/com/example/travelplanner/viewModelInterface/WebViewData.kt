@@ -9,17 +9,3 @@ data class WebViewData(
     val navigateToMain: () -> Unit,
     val navigateToResult: () -> Unit
 )
-
-/**
- * プレビュー用
- */
-class FakeWebViewDataProvider : PreviewParameterProvider<WebViewData> {
-    override val values: Sequence<WebViewData> = sequenceOf(
-        WebViewData(
-            plans = listOf(),
-            updatePlan = {},
-            navigateToMain = {},
-            navigateToResult = {}
-        )
-    )
-}

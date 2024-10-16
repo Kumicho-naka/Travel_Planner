@@ -7,10 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.travelplanner.viewModelInterface.FakeWebViewDataProvider
 import com.example.travelplanner.viewModelInterface.WebViewData
 
 @Composable
@@ -29,7 +27,7 @@ fun WebViewScreen(
 
     AppScreenWithHeader(
         title = "Web画面",
-        onBackClick = { webViewData.navigateToResult }
+        onBackClick = { webViewData.navigateToResult() }
     ) {
 
 
@@ -118,23 +116,14 @@ fun WebViewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Button(onClick = { webViewData.navigateToResult }) {
+                Button(onClick = { webViewData.navigateToResult() }) {
                     Text("確認へ戻る")
                 }
-                Button(onClick = { webViewData.navigateToMain }) {
+                Button(onClick = { webViewData.navigateToMain() }) {
                     Text("メインに戻る")
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WebViewPreview(){
-    WebViewScreen(
-        destination = "",
-        FakeWebViewDataProvider().values.first()
-    )
 }
 

@@ -36,7 +36,7 @@ fun PlanDeleteScreen(planDeleteData: PlanDeleteData){
 
     AppScreenWithHeader(
         title = "プラン削除",
-        onBackClick = { planDeleteData.navigateToMain }
+        onBackClick = { planDeleteData.navigateToMain() }
     ) {
 
         Box(modifier = Modifier.fillMaxSize()

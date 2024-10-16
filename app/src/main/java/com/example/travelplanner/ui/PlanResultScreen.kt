@@ -31,7 +31,7 @@ fun PlanResultScreen(planResultData: PlanResultData) {
 
     AppScreenWithHeader(
         title = "プラン確認",
-        onBackClick = { planResultData.navigateToMain }
+        onBackClick = { planResultData.navigateToMain() }
     ) {
 
         Box(modifier = Modifier.fillMaxSize()) {

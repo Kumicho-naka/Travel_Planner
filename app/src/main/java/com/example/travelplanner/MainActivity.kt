@@ -45,10 +45,10 @@ class MainActivity : ComponentActivity() {
 fun MainApp(planViewModel: PlanViewModel){
 
     val navController = rememberNavController()
+    val mainScreenNavigationHelper = MainScreenNavigationHelper(navController)
 
     NavHost(navController = navController, startDestination = "main"){
         composable("main") {
-            val mainScreenNavigationHelper = MainScreenNavigationHelper(navController)
             MainScreen( mainScreenNavigationHelper )
         } //メイン画面に移行
         composable("plan_creation") {
@@ -78,7 +78,7 @@ fun MainApp(planViewModel: PlanViewModel){
                     updatePlan = { plan -> planViewModel.updatePlan(plan)},
                     plans = planViewModel.plans,
                     navigateToMain = { navController.navigate("main") },
-                    navigateToResult = { navController.navigate("result") }
+                    navigateToResult = {  navController.navigate("result") }
                 )
             )
         } //プランのネットワーク情報画面に移行
@@ -87,7 +87,7 @@ fun MainApp(planViewModel: PlanViewModel){
                 planDeleteData = PlanDeleteData(
                     removePlan = { plan -> planViewModel.removePlan(plan)},
                     plans = planViewModel.plans,
-                    navigateToMain = { navController.navigate("main") }
+                    navigateToMain = { -> navController.navigate("main") }
                 )
             )
         } //プラン削除画面に移行
