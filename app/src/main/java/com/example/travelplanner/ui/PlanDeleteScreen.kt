@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.travelplanner.R
-import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.data.model.TravelPlan
 import com.example.travelplanner.viewModelInterface.FakePlanDeleteDataProvider
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 

@@ -1,7 +1,7 @@
 package com.example.travelplanner.viewModelInterface
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.data.model.TravelPlan
 
 data class PlanResultData (
     val updatePlan:(TravelPlan) -> Unit,

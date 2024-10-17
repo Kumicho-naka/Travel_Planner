@@ -68,7 +68,7 @@ fun MainApp(planViewModel: PlanViewModel){
             PlanResultScreen(
                 planResultData = PlanResultData(
                     updatePlan = { plan -> planViewModel.updatePlan(plan)},
-                    plans = planViewModel.plans,
+                    plans = planViewModel.getAllPlans(),
                     navigateToMain = { navController.navigate("main")},
                     navigateToWebView = { destination -> navController.navigate("webview/$destination")}
                 )
@@ -80,7 +80,7 @@ fun MainApp(planViewModel: PlanViewModel){
                 destination = destination,
                 webViewData = WebViewData(
                     updatePlan = { plan -> planViewModel.updatePlan(plan)},
-                    plans = planViewModel.plans,
+                    plans = planViewModel.getAllPlans(),
                     navigateToMain = { navController.navigate("main") },
                     navigateToResult = {  navController.popBackStack() }
                 )
@@ -90,7 +90,7 @@ fun MainApp(planViewModel: PlanViewModel){
             PlanDeleteScreen(
                 planDeleteData = PlanDeleteData(
                     removePlan = { plan -> planViewModel.removePlan(plan)},
-                    plans = planViewModel.plans,
+                    plans = planViewModel.getAllPlans(),
                     navigateToMain = { -> navController.navigate("main") }
                 )
             )

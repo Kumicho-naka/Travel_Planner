@@ -3,7 +3,8 @@ package com.example.travelplanner.viewModel
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
-import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.data.model.TravelPlan
+import com.example.travelplanner.repository.TravelPlanRepository
 import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -14,65 +15,35 @@ import javax.inject.Inject
 @HiltViewModel
 class PlanViewModel@Inject constructor(
     @ApplicationContext private val appContext: Context,
+    private val travelPlanRepository: TravelPlanRepository
 ): ViewModel() {
-
-    private val _plans = mutableListOf<TravelPlan>()
-    val plans: List<TravelPlan> get() = _plans
-
-    private val prefs: SharedPreferences = appContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-
     init {
-        loadPlansFromStorage()
         removeExpiredPlans()
     }
 
     // プランの追加
     fun addPlan(plan: TravelPlan){
-        _plans.add(plan)
-        savePlansToStorage()
+        travelPlanRepository.addPlan(plan)
     }
 
     // プランの削除
     fun removePlan(plan: TravelPlan){
-        _plans.remove(plan)
-        savePlansToStorage()
+        travelPlanRepository.deletePlan(plan)
     }
 
     // プランの更新
     fun updatePlan(updatePlan: TravelPlan){
-        val index = _plans.indexOfFirst { it.id == updatePlan.id }
-        if(index != -1){
-            _plans[index] = updatePlan
-            savePlansToStorage()
-        }
+        travelPlanRepository.updatePlan(updatePlan)
     }
 
-    // SharedPreferencesに保存する
-    private fun savePlansToStorage(){
-        val editor = prefs.edit()
-        val gson = Gson()
-        val plansJson = gson.toJson(_plans)
-        editor.putString("plans", plansJson)
-        editor.apply()
+    // 全プランの取得
+    fun getAllPlans():List<TravelPlan>{
+        return travelPlanRepository.getAllPlans()
     }
 
-    // SharedPreferencesからロードする
-    private fun loadPlansFromStorage(){
-        val plansJson = prefs.getString("plans",null)
-        if(plansJson != null){
-            val gson = Gson()
-            val type = object  : TypeToken<List<TravelPlan>>() {}.type
-            val planList: List<TravelPlan> = gson.fromJson(plansJson, type)
-            _plans.clear()
-            _plans.addAll(planList)
-        }
-    }
-
-    // 期限の切れたプランを削除する
+    // 期限の切れた(昨日までの)プランを削除する
     private fun removeExpiredPlans(){
-        _plans.removeAll{ it.date.before(appContext.resetTodayWithResetTIme())}
-
-        savePlansToStorage()
+        travelPlanRepository.deletePlanOlderYesterday()
     }
 
 }

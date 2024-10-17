@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.travelplanner.app-mergeDebugResources-55:/values-v21/values-v21.xml",
+            "outputFile": "com.example.travelplanner.app-mergeDebugResources-59:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "/Users/r.shindo/.gradle/caches/8.9/transforms/58d330ea96050f2466f41e91bcdff039/transformed/core-1.13.1/res/values-v21/values-v21.xml",
+                    "source": "/Users/r.shindo/.gradle/caches/8.9/transforms/e24cad72432ee0c92a9c4d95a5e43ef9/transformed/core-1.13.1/res/values-v21/values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

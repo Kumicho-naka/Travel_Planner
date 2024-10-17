@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.travelplanner.R
-import com.example.travelplanner.model.TravelPlan
+import com.example.travelplanner.data.model.TravelPlan
 import com.example.travelplanner.util.CoreUtil.ldtToDate
 import com.example.travelplanner.util.CoreUtil.resetTodayWithResetTIme
 import com.example.travelplanner.viewModelInterface.FakePlanCreateDataProvider
