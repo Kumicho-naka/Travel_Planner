@@ -1,13 +1,22 @@
 package com.example.travelplanner.viewModelInterface
 
-interface MainScreenNavigation {
-    fun navigateToPlanCreate()
-    fun navigateToPlanResult()
-    fun navigateToPlanDelete()
-}
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-class FakeMainScreenNavigation : MainScreenNavigation {
-    override fun navigateToPlanCreate() {}
-    override fun navigateToPlanResult() {}
-    override fun navigateToPlanDelete() {}
+data class MainScreenData (
+    val navigateToPlanCreate: () -> Unit,
+    val navigateToPlanResult: () -> Unit,
+    val navigateToPlanDelete: () -> Unit,
+)
+
+/**
+ * プレビュー用
+ */
+class FakeMainDataProvider : PreviewParameterProvider<MainScreenData> {
+    override val values: Sequence<MainScreenData> = sequenceOf(
+        MainScreenData(
+            navigateToPlanCreate = {},
+            navigateToPlanResult = {},
+            navigateToPlanDelete = {}
+        )
+    )
 }
