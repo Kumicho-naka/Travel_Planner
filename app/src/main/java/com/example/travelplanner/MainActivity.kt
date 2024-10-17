@@ -17,9 +17,8 @@ import com.example.travelplanner.ui.PlanCreateScreen
 import com.example.travelplanner.ui.PlanDeleteScreen
 import com.example.travelplanner.ui.PlanResultScreen
 import com.example.travelplanner.ui.WebViewScreen
-import com.example.travelplanner.ui.navigation.MainScreenNavigationHelper
 import com.example.travelplanner.viewModel.PlanViewModel
-import com.example.travelplanner.viewModelInterface.MainScreenNavigation
+import com.example.travelplanner.viewModelInterface.MainScreenData
 import com.example.travelplanner.viewModelInterface.PlanCreateData
 import com.example.travelplanner.viewModelInterface.PlanDeleteData
 import com.example.travelplanner.viewModelInterface.PlanResultData
@@ -45,11 +44,16 @@ class MainActivity : ComponentActivity() {
 fun MainApp(planViewModel: PlanViewModel){
 
     val navController = rememberNavController()
-    val mainScreenNavigationHelper = MainScreenNavigationHelper(navController)
 
     NavHost(navController = navController, startDestination = "main"){
         composable("main") {
-            MainScreen( mainScreenNavigationHelper )
+            MainScreen(
+                MainScreenData(
+                    navigateToPlanCreate = { navController.navigate("plan_creation") },
+                    navigateToPlanResult = { navController.navigate("plan_result") },
+                    navigateToPlanDelete = { navController.navigate("plan_delete") }
+                )
+            )
         } //メイン画面に移行
         composable("plan_creation") {
             PlanCreateScreen(
@@ -78,7 +82,7 @@ fun MainApp(planViewModel: PlanViewModel){
                     updatePlan = { plan -> planViewModel.updatePlan(plan)},
                     plans = planViewModel.plans,
                     navigateToMain = { navController.navigate("main") },
-                    navigateToResult = {  navController.navigate("result") }
+                    navigateToResult = {  navController.popBackStack() }
                 )
             )
         } //プランのネットワーク情報画面に移行

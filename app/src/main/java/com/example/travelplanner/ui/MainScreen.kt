@@ -22,11 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.travelplanner.R
-import com.example.travelplanner.viewModelInterface.FakeMainScreenNavigation
-import com.example.travelplanner.viewModelInterface.MainScreenNavigation
+import com.example.travelplanner.viewModelInterface.FakeMainDataProvider
+import com.example.travelplanner.viewModelInterface.MainScreenData
 
 @Composable
-fun MainScreen(mainScreenNavigation: MainScreenNavigation){
+fun MainScreen(mainScreenData: MainScreenData){
     val image = painterResource(R.drawable.free_item_main_background)
     Box(modifier = Modifier.fillMaxSize()){
         Image(painter = image,
@@ -48,7 +48,7 @@ fun MainScreen(mainScreenNavigation: MainScreenNavigation){
                 modifier = Modifier.padding(bottom = 32.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { mainScreenNavigation.navigateToPlanCreate() },
+            Button(onClick = { mainScreenData.navigateToPlanCreate() },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -57,7 +57,7 @@ fun MainScreen(mainScreenNavigation: MainScreenNavigation){
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { mainScreenNavigation.navigateToPlanResult() },
+            Button(onClick = { mainScreenData.navigateToPlanResult() },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -66,7 +66,7 @@ fun MainScreen(mainScreenNavigation: MainScreenNavigation){
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { mainScreenNavigation.navigateToPlanDelete()  },
+            Button(onClick = { mainScreenData.navigateToPlanDelete()  },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(64.dp)) {
@@ -82,5 +82,5 @@ fun MainScreen(mainScreenNavigation: MainScreenNavigation){
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview(){
-        MainScreen(FakeMainScreenNavigation())
+        MainScreen(FakeMainDataProvider().values.first())
 }
